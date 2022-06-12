@@ -33,10 +33,7 @@ export abstract class Cat {
   name: string;
 
   @Field()
-  adaptability: string;
-
-  @Field()
-  affection_level: string;
+  description: string;
 
   @Field({ nullable: true })
   weight: CatWeight;
@@ -44,99 +41,102 @@ export abstract class Cat {
   @Field({ nullable: true })
   image: CatImage;
 
-  @Field()
+  @Field({ nullable: true })
+  adaptability: string;
+
+  @Field({ nullable: true })
+  affection_level: string;
+
+  @Field({ nullable: true })
   alt_names: string;
 
-  @Field()
+  @Field({ nullable: true })
   cfa_url: string;
 
-  @Field()
+  @Field({ nullable: true })
   vetstreet_url: string;
 
-  @Field()
+  @Field({ nullable: true })
   vcahospitals_url: string;
 
-  @Field()
+  @Field({ nullable: true })
   temperament: string;
 
-  @Field()
+  @Field({ nullable: true })
   origin: string;
 
-  @Field()
+  @Field({ nullable: true })
   life_span: string;
 
-  @Field()
+  @Field({ nullable: true })
   indoor: number;
 
-  @Field()
+  @Field({ nullable: true })
   lap: number;
 
-  @Field()
+  @Field({ nullable: true })
   child_friendly: number;
 
-  @Field()
+  @Field({ nullable: true })
   country_code: string;
 
-  @Field()
+  @Field({ nullable: true })
   country_codes: string;
 
-  @Field()
-  description: string;
-
-  @Field()
+  @Field({ nullable: true })
   dog_friendly: number;
 
-  @Field()
+  @Field({ nullable: true })
   energy_level: number;
 
-  @Field()
+  @Field({ nullable: true })
   experimental: number;
 
-  @Field()
+  @Field({ nullable: true })
   grooming: number;
 
-  @Field()
+  @Field({ nullable: true })
   hairless: number;
 
-  @Field()
+  @Field({ nullable: true })
   health_issues: number;
 
-  @Field()
+  @Field({ nullable: true })
   intelligence: number;
 
-  @Field()
+  @Field({ nullable: true })
   shedding_level: number;
 
-  @Field()
+  @Field({ nullable: true })
   social_needs: number;
 
-  @Field()
+  @Field({ nullable: true })
   stranger_friendly: number;
 
-  @Field()
+  @Field({ nullable: true })
   vocalisation: number;
 
-  @Field()
+  @Field({ nullable: true })
   natural: number;
 
-  @Field()
+  @Field({ nullable: true })
   rare: number;
 
-  @Field()
+  @Field({ nullable: true })
   rex: number;
 
-  @Field()
+  @Field({ nullable: true })
   suppressed_tail: number;
 
-  @Field()
+  @Field({ nullable: true })
   short_legs: number;
 
-  @Field()
+  @Field({ nullable: true })
   wikipedia_url: string;
 
-  @Field()
+  @Field({ nullable: true })
   hypoallergenic: number;
 
-  @Field()
+  @Field({ nullable: true })
   reference_image_id: number;
 }
