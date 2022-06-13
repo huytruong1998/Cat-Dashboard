@@ -1,12 +1,12 @@
 import axios from "axios";
-import { Cat } from "../entities/Cat";
-import { Arg, Query, Resolver } from "type-graphql";
+import { AddCatInput, Cat, CatListResponse } from "../entities/Cat";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
 // @ts-ignore
 import { replace } from "replace-json-property";
 
 @Resolver()
 export class CatResolver {
-  @Query(() => [Cat])
+  @Query(() => CatListResponse)
   getCats(
     @Arg("page", () => Number)
     page: number,
@@ -16,12 +16,28 @@ export class CatResolver {
     order: string,
     @Arg("sort", () => String)
     sort: string
-  ): Promise<Cat[]> {
+  ): Promise<CatListResponse> {
     return axios
-      .get<Cat[]>(
-        `http://localhost:3001/cats?_page=${page}&_limit=${limit}&_order=${order}&_sort=${sort}`
+      .get(
+        `http://localhost:3001/cats?_order=${order}&_sort=${sort}&_page=${page}&_limit=${limit}`
       )
-      .then((resp) => resp.data);
+      .then((res) => {
+        const paginationOptions = res.headers["link"]
+          .split(", ")
+          .map((header) => {
+            const splitArr = header.split("; ");
+            return (
+              splitArr.length > 1 &&
+              splitArr[1].replace(/"/g, "").replace("rel=", "")
+            );
+          });
+
+        const resp: CatListResponse = {
+          catData: res.data,
+          hasMoreItems: paginationOptions.includes("next"),
+        };
+        return resp;
+      });
   }
 
   @Query(() => Cat)
@@ -42,5 +58,25 @@ export class CatResolver {
         replace("./db.json", "cats", resp.data);
         return resp.data;
       });
+  }
+
+  @Mutation(() => Cat)
+  async addCat(@Arg("data") newCatData: AddCatInput): Promise<Cat> {
+    const data: Partial<Cat> = {
+      name: newCatData.name,
+      description: newCatData.description,
+      weight: {
+        metric: newCatData.metric_weight,
+      },
+      image: {
+        url: newCatData.image_url,
+      },
+      life_span: newCatData.life_span,
+      wikipedia_url: newCatData.wikipedia_url,
+    };
+
+    return await axios
+      .post<Cat>(`http://localhost:3001/cats`, data)
+      .then((resp) => resp.data);
   }
 }
