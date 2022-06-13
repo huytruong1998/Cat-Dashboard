@@ -3,6 +3,7 @@ import { CatBreed } from "../entities/CatBreed";
 import {
   Arg,
   Field,
+  ID,
   InputType,
   Mutation,
   ObjectType,
@@ -115,6 +116,49 @@ export class CatBreedResolver {
   }
 
   @Mutation(() => CatBreedResponse)
+  async updateCatBreed(
+    @Arg("id", () => ID) id: string,
+    @Arg("data") newCatData: AddCatInput
+  ): Promise<CatBreedResponse> {
+    const existingBreed = await axios
+      .get<CatBreed[]>(
+        `http://localhost:3001/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}`
+      )
+      .then((resp) => resp.data);
+    if (existingBreed.length > 0)
+      return {
+        errors: [
+          {
+            field: "name",
+            message: "The cat breed has already existed!",
+          },
+        ],
+      };
+
+    const data: Partial<CatBreed> = {
+      id,
+      name: newCatData.name,
+      description: newCatData.description,
+      weight: {
+        metric: newCatData.metric_weight,
+      },
+      image: {
+        url: newCatData.image_url,
+      },
+      life_span: newCatData.life_span,
+      wikipedia_url: newCatData.wikipedia_url,
+    };
+
+    return axios
+      .patch<CatBreedResponse>(`http://localhost:3001/cats/${id}`, data)
+      .then((resp) => {
+        return {
+          data: resp.data as CatBreed,
+        };
+      });
+  }
+
+  @Mutation(() => CatBreedResponse)
   async addCatBreed(
     @Arg("data") newCatData: AddCatInput
   ): Promise<CatBreedResponse> {
@@ -149,10 +193,9 @@ export class CatBreedResolver {
     return axios
       .post<CatBreedResponse>(`http://localhost:3001/cats`, data)
       .then((resp) => {
-        const res: CatBreedResponse = {
+        return {
           data: resp.data as CatBreed,
         };
-        return res;
       });
   }
 
