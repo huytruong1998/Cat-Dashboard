@@ -61,7 +61,7 @@ export class AddCatInput {
 @Resolver()
 export class CatBreedResolver {
   @Query(() => CatBreedListResponse)
-  getCats(
+  getCatBreeds(
     @Arg("page", () => Number)
     page: number,
     @Arg("limit", () => Number)
@@ -69,33 +69,33 @@ export class CatBreedResolver {
     @Arg("order", () => String)
     order: string,
     @Arg("sort", () => String)
-    sort: string
+    sort: string,
+    @Arg("search", () => String, { nullable: true })
+    search?: string
   ): Promise<CatBreedListResponse> {
-    return axios
-      .get<CatBreedListResponse>(
-        `http://localhost:3001/cats?_order=${order}&_sort=${sort}&_page=${page}&_limit=${limit}`
-      )
-      .then((res) => {
-        const paginationOptions = res.headers["link"]
-          .split(", ")
-          .map((header) => {
-            const splitArr = header.split("; ");
-            return (
-              splitArr.length > 1 &&
-              splitArr[1].replace(/"/g, "").replace("rel=", "")
-            );
-          });
+    let request = `http://localhost:3001/cats?_order=${order}&_sort=${sort}&_page=${page}&_limit=${limit}`;
+    if (search) request += `&q=${search}`;
+    return axios.get<CatBreedListResponse>(request).then((res) => {
+      const paginationOptions = res.headers["link"]
+        .split(", ")
+        .map((header) => {
+          const splitArr = header.split("; ");
+          return (
+            splitArr.length > 1 &&
+            splitArr[1].replace(/"/g, "").replace("rel=", "")
+          );
+        });
 
-        const resp: CatBreedListResponse = {
-          catData: res.data as unknown as CatBreed[],
-          hasMoreItems: paginationOptions.includes("next"),
-        };
-        return resp;
-      });
+      const resp: CatBreedListResponse = {
+        catData: res.data as unknown as CatBreed[],
+        hasMoreItems: paginationOptions.includes("next"),
+      };
+      return resp;
+    });
   }
 
   @Query(() => CatBreed)
-  getCatById(
+  getCatBreedById(
     @Arg("id", () => String)
     id: string
   ): Promise<CatBreed> {
@@ -105,7 +105,7 @@ export class CatBreedResolver {
   }
 
   @Query(() => [CatBreed])
-  fetchCats(): Promise<CatBreed[]> {
+  fetchCatBreeds(): Promise<CatBreed[]> {
     return axios
       .get<CatBreed[]>("https://api.thecatapi.com/v1/breeds")
       .then((resp) => {
@@ -115,12 +115,12 @@ export class CatBreedResolver {
   }
 
   @Mutation(() => CatBreedResponse)
-  async addCat(
+  async addCatBreed(
     @Arg("data") newCatData: AddCatInput
   ): Promise<CatBreedResponse> {
     const existingBreed = await axios
       .get<CatBreed[]>(
-        `http://localhost:3001/cats?name_like=${newCatData.name}&&name.length=${newCatData.name.length}`
+        `http://localhost:3001/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}`
       )
       .then((resp) => resp.data);
     if (existingBreed.length > 0)
@@ -146,7 +146,7 @@ export class CatBreedResolver {
       wikipedia_url: newCatData.wikipedia_url,
     };
 
-    return await axios
+    return axios
       .post<CatBreedResponse>(`http://localhost:3001/cats`, data)
       .then((resp) => {
         const res: CatBreedResponse = {
@@ -157,7 +157,7 @@ export class CatBreedResolver {
   }
 
   @Mutation(() => Boolean)
-  async deleteCat(
+  async deleteCatBreed(
     @Arg("id", () => String)
     id: string
   ): Promise<Boolean> {
