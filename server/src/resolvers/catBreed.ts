@@ -12,8 +12,24 @@ import {
 // @ts-ignore
 import { replace } from "replace-json-property";
 
+@ObjectType()
+class FieldError {
+  @Field()
+  field: string;
+  @Field()
+  message: string;
+}
+@ObjectType()
+class CatBreedResponse {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+
+  @Field(() => CatBreed, { nullable: true })
+  data?: CatBreed;
+}
+
 @ObjectType({ description: "The cat breed list respone" })
-export class CatListResponse {
+export class CatBreedListResponse {
   @Field(() => [CatBreed])
   catData: CatBreed[];
 
@@ -44,7 +60,7 @@ export class AddCatInput {
 
 @Resolver()
 export class CatBreedResolver {
-  @Query(() => CatListResponse)
+  @Query(() => CatBreedListResponse)
   getCats(
     @Arg("page", () => Number)
     page: number,
@@ -54,9 +70,9 @@ export class CatBreedResolver {
     order: string,
     @Arg("sort", () => String)
     sort: string
-  ): Promise<CatListResponse> {
+  ): Promise<CatBreedListResponse> {
     return axios
-      .get(
+      .get<CatBreedListResponse>(
         `http://localhost:3001/cats?_order=${order}&_sort=${sort}&_page=${page}&_limit=${limit}`
       )
       .then((res) => {
@@ -70,8 +86,8 @@ export class CatBreedResolver {
             );
           });
 
-        const resp: CatListResponse = {
-          catData: res.data,
+        const resp: CatBreedListResponse = {
+          catData: res.data as unknown as CatBreed[],
           hasMoreItems: paginationOptions.includes("next"),
         };
         return resp;
@@ -98,8 +114,25 @@ export class CatBreedResolver {
       });
   }
 
-  @Mutation(() => CatBreed)
-  async addCat(@Arg("data") newCatData: AddCatInput): Promise<CatBreed> {
+  @Mutation(() => CatBreedResponse)
+  async addCat(
+    @Arg("data") newCatData: AddCatInput
+  ): Promise<CatBreedResponse> {
+    const existingBreed = await axios
+      .get<CatBreed[]>(
+        `http://localhost:3001/cats?name_like=${newCatData.name}&&name.length=${newCatData.name.length}`
+      )
+      .then((resp) => resp.data);
+    if (existingBreed.length > 0)
+      return {
+        errors: [
+          {
+            field: "name",
+            message: "The cat breed has already existed!",
+          },
+        ],
+      };
+
     const data: Partial<CatBreed> = {
       name: newCatData.name,
       description: newCatData.description,
@@ -114,8 +147,13 @@ export class CatBreedResolver {
     };
 
     return await axios
-      .post<CatBreed>(`http://localhost:3001/cats`, data)
-      .then((resp) => resp.data);
+      .post<CatBreedResponse>(`http://localhost:3001/cats`, data)
+      .then((resp) => {
+        const res: CatBreedResponse = {
+          data: resp.data as CatBreed,
+        };
+        return res;
+      });
   }
 
   @Mutation(() => Boolean)
