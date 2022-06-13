@@ -1,11 +1,49 @@
 import axios from "axios";
-import { AddCatInput, Cat, CatListResponse } from "../entities/Cat";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { CatBreed } from "../entities/CatBreed";
+import {
+  Arg,
+  Field,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from "type-graphql";
 // @ts-ignore
 import { replace } from "replace-json-property";
 
+@ObjectType({ description: "The cat breed list respone" })
+export class CatListResponse {
+  @Field(() => [CatBreed])
+  catData: CatBreed[];
+
+  @Field(() => Boolean)
+  hasMoreItems: Boolean;
+}
+
+@InputType({ description: "New cat breed input data" })
+export class AddCatInput {
+  @Field()
+  name: string;
+
+  @Field()
+  description: string;
+
+  @Field({ nullable: true })
+  metric_weight?: string;
+
+  @Field({ nullable: true })
+  image_url?: string;
+
+  @Field({ nullable: true })
+  life_span?: string;
+
+  @Field({ nullable: true })
+  wikipedia_url?: string;
+}
+
 @Resolver()
-export class CatResolver {
+export class CatBreedResolver {
   @Query(() => CatListResponse)
   getCats(
     @Arg("page", () => Number)
@@ -40,29 +78,29 @@ export class CatResolver {
       });
   }
 
-  @Query(() => Cat)
+  @Query(() => CatBreed)
   getCatById(
     @Arg("id", () => String)
     id: string
-  ): Promise<Cat> {
+  ): Promise<CatBreed> {
     return axios
-      .get<Cat>(`http://localhost:3001/cats/${id}`)
+      .get<CatBreed>(`http://localhost:3001/cats/${id}`)
       .then((resp) => resp.data);
   }
 
-  @Query(() => [Cat])
-  fetchCats(): Promise<Cat[]> {
+  @Query(() => [CatBreed])
+  fetchCats(): Promise<CatBreed[]> {
     return axios
-      .get<Cat[]>("https://api.thecatapi.com/v1/breeds")
+      .get<CatBreed[]>("https://api.thecatapi.com/v1/breeds")
       .then((resp) => {
         replace("./db.json", "cats", resp.data);
         return resp.data;
       });
   }
 
-  @Mutation(() => Cat)
-  async addCat(@Arg("data") newCatData: AddCatInput): Promise<Cat> {
-    const data: Partial<Cat> = {
+  @Mutation(() => CatBreed)
+  async addCat(@Arg("data") newCatData: AddCatInput): Promise<CatBreed> {
+    const data: Partial<CatBreed> = {
       name: newCatData.name,
       description: newCatData.description,
       weight: {
@@ -76,7 +114,16 @@ export class CatResolver {
     };
 
     return await axios
-      .post<Cat>(`http://localhost:3001/cats`, data)
+      .post<CatBreed>(`http://localhost:3001/cats`, data)
       .then((resp) => resp.data);
+  }
+
+  @Mutation(() => Boolean)
+  async deleteCat(
+    @Arg("id", () => String)
+    id: string
+  ): Promise<Boolean> {
+    await axios.delete(`http://localhost:3001/cats/${id}`);
+    return true;
   }
 }

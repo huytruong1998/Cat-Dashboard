@@ -2,13 +2,13 @@ import express, { Express } from "express";
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { CatResolver } from "./resolvers/cat";
+import { CatBreedResolver } from "./resolvers/catBreed";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 
 const main = async () => {
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [CatResolver],
+      resolvers: [CatBreedResolver],
       validate: false,
     }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground],

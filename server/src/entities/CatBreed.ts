@@ -1,8 +1,7 @@
-import { Field, ID, InputType, ObjectType } from "type-graphql";
+import { Field, ID, ObjectType } from "type-graphql";
 
 @ObjectType()
-@InputType()
-class CatWeight {
+class Weight {
   @Field({ nullable: true })
   imperial?: string;
 
@@ -11,7 +10,7 @@ class CatWeight {
 }
 
 @ObjectType()
-class CatImage {
+class Image {
   @Field({ nullable: true })
   id?: string;
 
@@ -25,17 +24,8 @@ class CatImage {
   url?: string;
 }
 
-@ObjectType({ description: "The cat list reponse" })
-export class CatListResponse {
-  @Field(() => [Cat])
-  catData: Cat[];
-
-  @Field(() => Boolean)
-  hasMoreItems: Boolean;
-}
-
 @ObjectType({ description: "The cat model" })
-export class Cat {
+export class CatBreed {
   @Field(() => ID)
   id: string;
 
@@ -45,11 +35,11 @@ export class Cat {
   @Field(() => String)
   description: string;
 
-  @Field(() => CatWeight, { nullable: true })
-  weight: CatWeight;
+  @Field(() => Weight, { nullable: true })
+  weight: Weight;
 
-  @Field(() => CatImage, { nullable: true })
-  image: CatImage;
+  @Field(() => Image, { nullable: true })
+  image: Image;
 
   @Field({ nullable: true })
   adaptability: string;
@@ -149,25 +139,4 @@ export class Cat {
 
   @Field({ nullable: true })
   reference_image_id: number;
-}
-
-@InputType({ description: "New cat input data" })
-export class AddCatInput {
-  @Field()
-  name: string;
-
-  @Field()
-  description: string;
-
-  @Field({ nullable: true })
-  metric_weight?: string;
-
-  @Field({ nullable: true })
-  image_url?: string;
-
-  @Field({ nullable: true })
-  life_span?: string;
-
-  @Field({ nullable: true })
-  wikipedia_url?: string;
 }
