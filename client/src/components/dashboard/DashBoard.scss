@@ -1,0 +1,18 @@
+.table-utils{
+    overflow:auto;
+    margin: 10px 0px;
+    &__control{
+        float: left;
+        display: flex;
+        align-items: center;
+        &__search{
+            height: 30.25px;
+        }
+    }
+    &__pagination{
+        column-gap: 10px;
+        float: right;
+        display: flex;
+        align-items: center;
+    }
+}

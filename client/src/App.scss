@@ -1,0 +1,13 @@
+
+@import 'theme/__variables';
+
+
+body {
+  font-family: 'Spartan', sans-serif;
+  color: $color-gray;
+  box-sizing: border-box;
+  font-size: 15px;
+  @media only screen and (min-width: 48em) {
+    font-size: 18px;
+  }
+}

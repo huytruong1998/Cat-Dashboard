@@ -1,12 +1,13 @@
+import DashBoard from "./components/dashboard/DashBoard";
+import "./App.scss";
+import AppLayout from "./components/layout/AppLayout";
 
-import './App.scss';
-
-const App = ()=> {
+const App = () => {
   return (
-    <div className="App">
-      <div>Clean code</div>
-    </div>
+    <AppLayout>
+      <DashBoard />
+    </AppLayout>
   );
-}
+};
 
 export default App;
