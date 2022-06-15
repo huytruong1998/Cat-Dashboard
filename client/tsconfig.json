@@ -26,9 +26,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "src",
-    "paths": {
-      "*": ["src/*"]
-    }
   },
   "include": ["./src/**/*.ts","./src/**/*.tsx"],
   "exclude": [

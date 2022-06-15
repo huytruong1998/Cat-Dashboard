@@ -5,57 +5,108 @@ import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutl
 import RefreshIcon from "@mui/icons-material/Refresh";
 
 import "./DashBoard.scss";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { GET_CAT_BREEDS } from "apollo/queries/breed-query";
+import { useEffect, useState } from "react";
+import { FETCH_CAT_BREEDS } from "apollo/mutations/breed-mutation";
 
 const DashBoard = () => {
-  const data: any[] = [
+  const pageLimit = 10;
+  const [page, setPage] = useState<number>(1);
+
+  const [search, setSearch] = useState<string>("");
+  // const [displayList, setDisplayList] = useState<any[]>([]);
+  const [getCatBreeds, { loading, error, data, refetch }] = useLazyQuery(
+    GET_CAT_BREEDS,
     {
-      id: "abob",
-      name: "American Bobtail",
-      description:
-        "American Bobtails are loving and incredibly intelligent cats possessing a distinctive wild appearance. They are extremely interactive cats that bond with their human family with great devotion.",
-    },
-    {
-      id: "jbob",
-      name: "Japanese Bobtail",
-      description:
-        "The Japanese Bobtail is an active, sweet, loving and highly intelligent breed. They love to be with people and play seemingly endlessly. They learn their name and respond to it. They bring toys to people and play fetch with a favorite toy for hours. Bobtails are social and are at their best when in the company of people. They take over the house and are not intimidated. If a dog is in the house, Bobtails assume Bobtails are in charge.",
-    },
-    {
-      id: "kuri",
-      name: "Kurilian",
-      description:
-        "The character of the Kurilian Bobtail is independent, highly intelligent, clever, inquisitive, sociable, playful, trainable, absent of aggression and very gentle. They are devoted to their humans and when allowed are either on the lap of or sleeping in bed with their owners.",
-    },
-    {
-      id: "pixi",
-      name: "Pixie-bob",
-      description:
-        "Companionable and affectionate, the Pixie-bob wants to be an integral part of the family. The Pixie-Bob’s ability to bond with their humans along with their patient personas make them excellent companions for children.",
-    },
-  ];
+      variables: {
+        page: page,
+        limit: pageLimit,
+        order: "desc",
+        sort: "created_at",
+        search: "",
+      },
+      fetchPolicy: "network-only",
+    }
+  );
+
+  const [fetchCatBreeds, { data: fetchData }] = useMutation(FETCH_CAT_BREEDS);
+
+  useEffect(() => {
+    getCatBreeds();
+  }, []);
+
+  useEffect(() => {
+    setPage(1);
+    refetch({
+      page: page,
+      limit: pageLimit,
+      order: "desc",
+      sort: "created_at",
+      search,
+    });
+  }, [fetchData]);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setPage(1);
+      refetch({
+        page: page,
+        limit: pageLimit,
+        order: "desc",
+        sort: "created_at",
+        search,
+      });
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  const handlePrevPage = () => {
+    if (page < 2) return;
+    setPage(page - 1);
+  };
+
+  const handleNextPage = () => {
+    if (!data?.getCatBreeds?.hasMoreItems) return;
+    setPage(page + 1);
+  };
+
+  if (error) return <div>{error.message}</div>;
+
   return (
     <>
       <div className="table-utils">
         <div className="table-utils__control">
-          <input className="table-utils__control__search" />
+          <input
+            className="table-utils__control__search"
+            placeholder="Search by text"
+            type="text"
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
           <Button variant="contained">Add New</Button>
         </div>
         <div className="table-utils__pagination">
-          <Button variant="contained">
+          <Button variant="contained" onClick={() => fetchCatBreeds()}>
             <RefreshIcon></RefreshIcon>
           </Button>
-          <div>1-50</div>
-          <IconButton size="small">
+          <div>
+            {1 + (page - 1) * pageLimit}-{page * pageLimit}
+          </div>
+          <IconButton size="small" onClick={handlePrevPage}>
             <ArrowBackIosNewOutlinedIcon></ArrowBackIosNewOutlinedIcon>
           </IconButton>
-          <IconButton size="small">
+          <IconButton size="small" onClick={handleNextPage}>
             <ArrowForwardIosOutlinedIcon></ArrowForwardIosOutlinedIcon>
           </IconButton>
         </div>
       </div>
-
-      <DashBoardTable data={data}></DashBoardTable>
+      {loading && <div>Loading ......</div>}
+      {!loading && data && data?.getCatBreeds?.catData && (
+        <DashBoardTable data={data?.getCatBreeds?.catData}></DashBoardTable>
+      )}
     </>
   );
 };
