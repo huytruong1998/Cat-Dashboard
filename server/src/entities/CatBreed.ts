@@ -41,6 +41,9 @@ export class CatBreed {
   @Field(() => Image, { nullable: true })
   image: Image;
 
+  @Field(() => Number, { nullable: true })
+  created_at: Number;
+
   @Field({ nullable: true })
   adaptability: string;
 

@@ -15,8 +15,8 @@ const DashBoard = () => {
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState<string>("");
-  // const [displayList, setDisplayList] = useState<any[]>([]);
-  const [getCatBreeds, { loading, error, data, refetch }] = useLazyQuery(
+  const [displayList, setDisplayList] = useState([]);
+  const [getCatBreeds, { loading, error, data }] = useLazyQuery(
     GET_CAT_BREEDS,
     {
       variables: {
@@ -24,44 +24,26 @@ const DashBoard = () => {
         limit: pageLimit,
         order: "desc",
         sort: "created_at",
-        search: "",
+        search,
       },
       fetchPolicy: "network-only",
+      nextFetchPolicy: "standby",
+      onCompleted: (data) => {
+        setDisplayList(data.getCatBreeds.catData);
+      },
     }
   );
 
-  const [fetchCatBreeds, { data: fetchData }] = useMutation(FETCH_CAT_BREEDS);
+  const [fetchCatBreeds] = useMutation(FETCH_CAT_BREEDS);
 
   useEffect(() => {
     getCatBreeds();
   }, []);
 
-  useEffect(() => {
+  const handleSearch = (text: string) => {
     setPage(1);
-    refetch({
-      page: page,
-      limit: pageLimit,
-      order: "desc",
-      sort: "created_at",
-      search,
-    });
-  }, [fetchData]);
-
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      setPage(1);
-      refetch({
-        page: page,
-        limit: pageLimit,
-        order: "desc",
-        sort: "created_at",
-        search,
-      });
-    }, 1000);
-
-    return () => clearTimeout(delayDebounceFn);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+    setSearch(text);
+  };
 
   const handlePrevPage = () => {
     if (page < 2) return;
@@ -83,7 +65,8 @@ const DashBoard = () => {
             className="table-utils__control__search"
             placeholder="Search by text"
             type="text"
-            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            onChange={(e) => handleSearch(e.target.value)}
           />
 
           <Button variant="contained">Add New</Button>
@@ -105,7 +88,7 @@ const DashBoard = () => {
       </div>
       {loading && <div>Loading ......</div>}
       {!loading && data && data?.getCatBreeds?.catData && (
-        <DashBoardTable data={data?.getCatBreeds?.catData}></DashBoardTable>
+        <DashBoardTable data={displayList}></DashBoardTable>
       )}
     </>
   );

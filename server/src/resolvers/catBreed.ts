@@ -5,6 +5,7 @@ import {
   Field,
   ID,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -63,9 +64,9 @@ export class AddCatInput {
 export class CatBreedResolver {
   @Query(() => CatBreedListResponse)
   getCatBreeds(
-    @Arg("page", () => Number)
+    @Arg("page", () => Int)
     page: number,
-    @Arg("limit", () => Number)
+    @Arg("limit", () => Int)
     limit: number,
     @Arg("order", () => String)
     order: string,
@@ -74,8 +75,9 @@ export class CatBreedResolver {
     @Arg("search", () => String, { nullable: true })
     search?: string
   ): Promise<CatBreedListResponse> {
-    let request = `http://localhost:3001/cats?_order=${order}&_sort=${sort}&_page=${page}&_limit=${limit}`;
-    if (search) request += `&q=${search}`;
+    let request = `http://localhost:3001/cats?_page=${page}&_sort=${sort}&_order=${order}&_limit=${limit}`;
+
+    if (search) request += `&name_like=${search}`;
     return axios.get<CatBreedListResponse>(request).then((res) => {
       const paginationOptions = res.headers["link"]
         .split(", ")
@@ -105,13 +107,15 @@ export class CatBreedResolver {
       .then((resp) => resp.data);
   }
 
-  @Query(() => [CatBreed])
-  fetchCatBreeds(): Promise<CatBreed[]> {
+  @Mutation(() => Boolean)
+  async fetchCatBreeds(): Promise<Boolean> {
     return axios
       .get<CatBreed[]>("https://api.thecatapi.com/v1/breeds")
       .then((resp) => {
+        const today = new Date().getTime();
+        resp.data.forEach((breed) => (breed.created_at = today));
         replace("./db.json", "cats", resp.data);
-        return resp.data;
+        return true;
       });
   }
 
@@ -188,6 +192,7 @@ export class CatBreedResolver {
       },
       life_span: newCatData.life_span,
       wikipedia_url: newCatData.wikipedia_url,
+      created_at: new Date().getTime(),
     };
 
     return axios
