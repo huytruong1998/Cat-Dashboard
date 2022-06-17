@@ -76,7 +76,6 @@ export class CatBreedResolver {
     search?: string
   ): Promise<CatBreedListResponse> {
     let request = `http://localhost:3001/cats?_page=${page}&_sort=${sort}&_order=${order}&_limit=${limit}`;
-
     if (search) request += `&name_like=${search}`;
     return axios.get<CatBreedListResponse>(request).then((res) => {
       const paginationOptions = res.headers["link"]
@@ -108,7 +107,7 @@ export class CatBreedResolver {
   }
 
   @Mutation(() => Boolean)
-  async fetchCatBreeds(): Promise<Boolean> {
+  fetchCatBreeds(): Promise<Boolean> {
     return axios
       .get<CatBreed[]>("https://api.thecatapi.com/v1/breeds")
       .then((resp) => {

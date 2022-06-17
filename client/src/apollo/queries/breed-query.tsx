@@ -19,7 +19,6 @@ export const GET_CAT_BREEDS = gql`
       catData {
         id
         name
-        origin
         description
       }
     }
