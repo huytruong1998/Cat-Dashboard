@@ -8,8 +8,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import "./DashBoard.scss";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_CAT_BREEDS } from "apollo/queries/breed-query";
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { FETCH_CAT_BREEDS } from "apollo/mutations/breed-mutation";
+import { BreedElement } from "./modals/breeds";
 
 interface getCatVariable {
   page: number;
@@ -19,11 +20,6 @@ interface getCatVariable {
   search: string;
 }
 
-export interface RowElement {
-  id: string;
-  name: string;
-  description: string;
-}
 const DashBoard = () => {
   const [search, setSearch] = useState<string>("");
   const [getVariable, setVariable] = useState<getCatVariable>({
@@ -34,7 +30,7 @@ const DashBoard = () => {
     search: "",
   });
 
-  const [displayList, setDisplayList] = useState<RowElement[]>([]);
+  const [displayList, setDisplayList] = useState<BreedElement[]>([]);
   const [getCatBreeds, { loading, error, data, refetch }] = useLazyQuery(
     GET_CAT_BREEDS,
     {
@@ -73,7 +69,8 @@ const DashBoard = () => {
     }
   }, [dataFetch]);
 
-  const handleSearch = () => {
+  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setVariable((getVariable) => ({
       ...getVariable,
       page: 1,
@@ -103,16 +100,19 @@ const DashBoard = () => {
     <>
       <div className="table-utils">
         <div className="table-utils__control">
-          <input
-            className="table-utils__control__search"
-            placeholder="Search by text"
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Button variant="contained" onClick={handleSearch}>
-            <SearchIcon></SearchIcon>
-          </Button>
+          <form className="form" onSubmit={(e) => handleSearch(e)}>
+            <input
+              className="table-utils__control__search"
+              placeholder="Search by text"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button variant="contained" type="submit">
+              <SearchIcon></SearchIcon>
+            </Button>
+          </form>
+
           <Button className="table-utils__control__add" variant="contained">
             Add New
           </Button>

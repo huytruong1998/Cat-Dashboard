@@ -7,15 +7,19 @@ import {
   TableCell,
   Paper,
   IconButton,
+  Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMutation } from "@apollo/client";
-import { RowElement } from "../DashBoard";
 import { Loading } from "components/loading/loading";
 import { DELETE_CAT_BREED } from "apollo/mutations/breed-mutation";
+import "./DashBoardTable.scss";
+import { BreedElement } from "components/dashboard/modals/breeds";
+import { useState } from "react";
+import BreedDialog from "../dialog/BreedDialog";
 
 interface TableProps {
-  data: RowElement[];
+  data: BreedElement[];
   refetch: () => void;
   loading: boolean;
 }
@@ -27,8 +31,17 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
     },
   });
 
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <div>
+    <>
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>
@@ -40,13 +53,18 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
           </TableHead>
           <TableBody>
             {data &&
-              data.map((row: RowElement) => (
+              data.map((row: BreedElement) => (
                 <TableRow
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  onClick={handleOpen}
                 >
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.description}</TableCell>
+                  <TableCell>
+                    <Typography className="truncate-description">
+                      {row.description}
+                    </Typography>
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       size="small"
@@ -64,7 +82,8 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
         </Table>
       </TableContainer>
       {loading && <Loading size={150} />}
-    </div>
+      <BreedDialog open={open} handleClose={handleClose} />
+    </>
   );
 };
 
