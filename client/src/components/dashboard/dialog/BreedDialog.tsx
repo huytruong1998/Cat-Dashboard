@@ -1,44 +1,22 @@
 import { Box, Modal, Grid, TextField, Button } from "@mui/material";
 import defaultLogo from "assets/default-loading-image.png";
+import "./BreedDialog.scss";
 
 interface BreedDialogProps {
   open: boolean;
   handleClose: () => void;
+  breedId?: string;
 }
-
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  maxWidth: 600,
-  maxHeight: 1000,
-  pt: 2,
-  px: 4,
-  pb: 3,
-};
 
 const BreedDialog: React.FC<BreedDialogProps> = ({ open, handleClose }) => {
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="parent-modal-title"
-      aria-describedby="parent-modal-description"
-    >
-      <Box sx={{ ...style }}>
+    <Modal open={open} onClose={handleClose}>
+      <Box className="container">
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <img
-              style={{ width: "100%", height: "100%" }}
-              src={defaultLogo}
-              alt=""
-            />
+            <img style={{ width: "100%" }} src={defaultLogo} alt="" />
           </Grid>
-          <Grid container item xs={6} spacing={0.1}>
+          <Grid style={{ gridRowGap: 10 }} container item xs={6}>
             <TextField fullWidth label="Name" variant="outlined" />
             <TextField fullWidth label="Origin" variant="outlined" />
             <TextField fullWidth label="Image Url" variant="outlined" />
