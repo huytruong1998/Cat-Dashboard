@@ -11,6 +11,7 @@ import { GET_CAT_BREEDS } from "apollo/queries/breed-query";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { FETCH_CAT_BREEDS } from "apollo/mutations/breed-mutation";
 import { BreedElement } from "./modals/breeds";
+import BreedDialog from "./dialog/BreedDialog";
 
 interface getCatVariable {
   page: number;
@@ -29,8 +30,10 @@ const DashBoard = () => {
     sort: "created_at",
     search: "",
   });
+  const [open, setOpenBreedDialog] = useState(false);
 
   const [displayList, setDisplayList] = useState<BreedElement[]>([]);
+  const [fetchCatBreeds, { data: dataFetch }] = useMutation(FETCH_CAT_BREEDS);
   const [getCatBreeds, { loading, error, data, refetch }] = useLazyQuery(
     GET_CAT_BREEDS,
     {
@@ -50,8 +53,6 @@ const DashBoard = () => {
       endPage -= getVariable.limit - displayList.length;
     return `${startPage} - ${endPage}`;
   }, [getVariable, displayList]);
-
-  const [fetchCatBreeds, { data: dataFetch }] = useMutation(FETCH_CAT_BREEDS);
 
   useEffect(() => {
     getCatBreeds();
@@ -100,7 +101,10 @@ const DashBoard = () => {
     <>
       <div className="table-utils">
         <div className="table-utils__control">
-          <form className="form" onSubmit={(e) => handleSearch(e)}>
+          <form
+            className="table-utils__control__form"
+            onSubmit={(e) => handleSearch(e)}
+          >
             <input
               className="table-utils__control__search"
               placeholder="Search by text"
@@ -113,7 +117,11 @@ const DashBoard = () => {
             </Button>
           </form>
 
-          <Button className="table-utils__control__add" variant="contained">
+          <Button
+            className="table-utils__control__add"
+            variant="contained"
+            onClick={() => setOpenBreedDialog(true)}
+          >
             Add New
           </Button>
         </div>
@@ -137,6 +145,7 @@ const DashBoard = () => {
         data={displayList}
         refetch={refetch}
       ></DashBoardTable>
+      <BreedDialog open={open} handleClose={() => setOpenBreedDialog(false)} />
     </>
   );
 };

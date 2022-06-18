@@ -1,23 +1,44 @@
+@import 'theme/__mixins.scss';
+
 .table-utils{
     overflow:auto;
     margin: 10px 0px;
     &__control{
-        float: left;
         display: flex;
+        @include tablet {
+            float: left;
+        }
+        @include mobile {
+            display: block;
+            text-align: center;
+        }
         gap: 10px;
         align-items: center;
+        &__form{
+            @include mobile {
+                width: 100%;
+            } 
+        }
         &__search{
             height: 30.25px;
-
+            @include mobile {
+                width: 60%;
+            } 
         }
         &__add{
+            margin: 10px !important;
             width: 125px;
         }
     }
     &__pagination{
         gap: 10px;
-        float: right;
         display: flex;
+        @include tablet {
+            float: right;
+        }
+        @include mobile {
+            justify-content: center;
+        }
         align-items: center;
     }
 }

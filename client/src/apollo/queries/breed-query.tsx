@@ -1,5 +1,13 @@
 import { gql } from "@apollo/client";
 
+const FRAGMENT_CATBREED = gql`
+  fragment catBreedField on CatBreed {
+    id
+    name
+    description
+  }
+`;
+
 export const GET_CAT_BREEDS = gql`
   query GetCatBreeds(
     $page: Int!
@@ -17,10 +25,24 @@ export const GET_CAT_BREEDS = gql`
     ) {
       hasMoreItems
       catData {
-        id
-        name
-        description
+        ...catBreedField
       }
     }
   }
+  ${FRAGMENT_CATBREED}
+`;
+
+export const GET_CAT_BREED_BY_ID = gql`
+  query GetCatBreedById($id: String!) {
+    getCatBreedById(id: $id) {
+      ...catBreedField
+      weight {
+        metric
+      }
+      image {
+        url
+      }
+    }
+  }
+  ${FRAGMENT_CATBREED}
 `;

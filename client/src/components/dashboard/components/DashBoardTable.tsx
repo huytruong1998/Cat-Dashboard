@@ -31,13 +31,15 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
     },
   });
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpenBreedDialog] = useState(false);
+  const [currentId, setCurrentId] = useState("");
 
-  const handleOpen = () => {
-    setOpen(true);
+  const openEditModal = (id: string) => {
+    setCurrentId(id);
+    setOpenBreedDialog(true);
   };
-  const handleClose = () => {
-    setOpen(false);
+  const closeEditModal = () => {
+    setOpenBreedDialog(false);
   };
 
   return (
@@ -57,7 +59,7 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
                 <TableRow
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  onClick={handleOpen}
+                  onClick={() => openEditModal(row.id)}
                 >
                   <TableCell>{row.name}</TableCell>
                   <TableCell>
@@ -82,7 +84,11 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
         </Table>
       </TableContainer>
       {loading && <Loading size={150} />}
-      <BreedDialog open={open} handleClose={handleClose} />
+      <BreedDialog
+        open={open}
+        handleClose={closeEditModal}
+        breedId={currentId}
+      />
     </>
   );
 };
