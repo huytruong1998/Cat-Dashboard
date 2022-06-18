@@ -25,11 +25,14 @@ interface TableProps {
 }
 
 const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
-  const [deleteCatBreeds] = useMutation(DELETE_CAT_BREED, {
-    onCompleted: () => {
-      refetch();
-    },
-  });
+  const [deleteCatBreeds, { loading: deleteLoading }] = useMutation(
+    DELETE_CAT_BREED,
+    {
+      onCompleted: () => {
+        refetch();
+      },
+    }
+  );
 
   const [open, setOpenBreedDialog] = useState(false);
   const [currentId, setCurrentId] = useState("");
@@ -57,18 +60,17 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
             <TableBody>
               {data &&
                 data.map((row: BreedElement) => (
-                  <TableRow
-                    key={row.id}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                      "&:hover": {
-                        cursor: "pointer",
-                      },
-                    }}
-                    onClick={() => openEditModal(row.id)}
-                  >
+                  <TableRow key={row.id}>
                     <TableCell>{row.name}</TableCell>
-                    <TableCell>
+                    <TableCell
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                        "&:hover": {
+                          cursor: "pointer",
+                        },
+                      }}
+                      onClick={() => openEditModal(row.id)}
+                    >
                       <Typography className="truncate-description">
                         {row.description}
                       </Typography>
@@ -89,7 +91,7 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {loading && <Loading size={150} />}
+        {(loading || deleteLoading) && <Loading size={150} />}
       </div>
       <BreedDialog
         open={open}

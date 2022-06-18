@@ -176,6 +176,12 @@ export class CatBreedResolver {
         message: "The cat breed has already existed!",
       });
 
+    if (newCatData.name.length === 0)
+      fieldErrors.push({
+        field: "name",
+        message: "The name can not be empty!",
+      });
+
     if (newCatData.description.length === 0)
       fieldErrors.push({
         field: "description",

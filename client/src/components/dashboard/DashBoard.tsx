@@ -8,51 +8,40 @@ import SearchIcon from "@mui/icons-material/Search";
 import "./DashBoard.scss";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_CAT_BREEDS } from "apollo/queries/breed-query";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useContext, useEffect, useMemo, useState } from "react";
 import { FETCH_CAT_BREEDS } from "apollo/mutations/breed-mutation";
-import { BreedElement } from "./modals/breeds";
 import BreedDialog from "./dialog/BreedDialog";
-
-interface getCatVariable {
-  page: number;
-  limit: number;
-  order: string;
-  sort: string;
-  search: string;
-}
+import { DashBoardContext } from "context/DashBoardContext";
 
 const DashBoard = () => {
   const [search, setSearch] = useState<string>("");
-  const [getVariable, setVariable] = useState<getCatVariable>({
-    page: 1,
-    limit: 10,
-    order: "desc",
-    sort: "created_at",
-    search: "",
-  });
   const [open, setOpenBreedDialog] = useState(false);
 
-  const [displayList, setDisplayList] = useState<BreedElement[]>([]);
-  const [fetchCatBreeds, { data: dataFetch }] = useMutation(FETCH_CAT_BREEDS);
-  const [getCatBreeds, { loading, error, data, refetch }] = useLazyQuery(
+  const { dashboardState, updateList, updateVariables } =
+    useContext(DashBoardContext);
+  const { displayList, variables } = dashboardState;
+  const [fetchCatBreeds, { loading: loadingFetch, data: dataFetch }] =
+    useMutation(FETCH_CAT_BREEDS);
+  const [getCatBreeds, { loading, error, data }] = useLazyQuery(
     GET_CAT_BREEDS,
     {
-      variables: getVariable,
+      variables: variables,
       fetchPolicy: "network-only",
       nextFetchPolicy: "standby",
       onCompleted: (data) => {
-        setDisplayList(data.getCatBreeds.catData);
+        console.log("update list", data);
+        updateList(data.getCatBreeds.catData);
       },
     }
   );
 
   const getPageNumber: string = useMemo(() => {
-    const startPage = 1 + (getVariable.page - 1) * getVariable.limit;
-    let endPage = getVariable.page * getVariable.limit;
-    if (displayList.length < getVariable.limit)
-      endPage -= getVariable.limit - displayList.length;
+    const startPage = 1 + (variables.page - 1) * variables.limit;
+    let endPage = variables.page * variables.limit;
+    if (displayList.length < variables.limit)
+      endPage -= variables.limit - displayList.length;
     return `${startPage} - ${endPage}`;
-  }, [getVariable, displayList]);
+  }, [variables, displayList]);
 
   useEffect(() => {
     getCatBreeds();
@@ -60,39 +49,39 @@ const DashBoard = () => {
 
   useEffect(() => {
     const newData = {
-      ...getVariable,
+      ...variables,
       page: 1,
     };
-    if (getVariable.page === 1) {
-      refetch(newData);
+    if (variables.page === 1) {
+      getCatBreeds({ variables: newData });
     } else {
-      setVariable(newData);
+      updateVariables(newData);
     }
   }, [dataFetch]);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setVariable((getVariable) => ({
-      ...getVariable,
+    updateVariables({
+      ...variables,
       page: 1,
       search,
-    }));
+    });
   };
 
   const handlePrevPage = () => {
-    if (getVariable.page < 2) return;
-    setVariable((getVariable) => ({
-      ...getVariable,
-      page: getVariable.page - 1,
-    }));
+    if (variables.page < 2) return;
+    updateVariables({
+      ...variables,
+      page: variables.page - 1,
+    });
   };
 
   const handleNextPage = () => {
     if (!data?.getCatBreeds?.hasMoreItems) return;
-    setVariable((getVariable) => ({
-      ...getVariable,
-      page: getVariable.page + 1,
-    }));
+    updateVariables({
+      ...variables,
+      page: variables.page + 1,
+    });
   };
 
   if (error) return <div>{error.message}</div>;
@@ -141,9 +130,9 @@ const DashBoard = () => {
         </div>
       </div>
       <DashBoardTable
-        loading={loading}
+        loading={loading || loadingFetch}
         data={displayList}
-        refetch={refetch}
+        refetch={getCatBreeds}
       ></DashBoardTable>
       <BreedDialog open={open} handleClose={() => setOpenBreedDialog(false)} />
     </>

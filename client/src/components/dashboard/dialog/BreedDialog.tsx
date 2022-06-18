@@ -1,10 +1,14 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { Box, Modal, Grid, TextField, Button } from "@mui/material";
 import { ADD_CAT_BREED, EDIT_CAT_BREED } from "apollo/mutations/breed-mutation";
-import { GET_CAT_BREED_BY_ID } from "apollo/queries/breed-query";
+import {
+  GET_CAT_BREEDS,
+  GET_CAT_BREED_BY_ID,
+} from "apollo/queries/breed-query";
 import defaultLogo from "assets/default-loading-image.png";
 import { Loading } from "components/loading/loading";
-import { ChangeEvent, useEffect, useState } from "react";
+import { DashBoardContext } from "context/DashBoardContext";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import "./BreedDialog.scss";
 
 interface BreedDialogProps {
@@ -34,7 +38,17 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
   handleClose,
   breedId,
 }) => {
-  const [getCatBreed, { loading, error, data }] = useLazyQuery(
+  const { dashboardState, updateList } = useContext(DashBoardContext);
+  const [getCatBreeds] = useLazyQuery(GET_CAT_BREEDS, {
+    variables: dashboardState.variables,
+    fetchPolicy: "network-only",
+    nextFetchPolicy: "standby",
+    onCompleted: (data) => {
+      updateList(data.getCatBreeds.catData);
+    },
+  });
+
+  const [getCatBreedById, { loading, error, data }] = useLazyQuery(
     GET_CAT_BREED_BY_ID,
     {
       fetchPolicy: "network-only",
@@ -54,6 +68,7 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
       data: breedFrom,
     },
     onCompleted: (data) => {
+      console.log("add data", data?.addCatBreed?.data);
       if (data?.addCatBreed?.data) {
         closeDialog();
       } else if (data?.addCatBreed?.errors) {
@@ -77,13 +92,23 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
 
   useEffect(() => {
     if (open && breedId) {
-      getCatBreed({ variables: { id: breedId } });
+      getCatBreedById({ variables: { id: breedId } });
+    }
+    if (!open) {
+      console.log("close");
+      setBreedForm({
+        name: "",
+        description: "",
+        origin: "",
+        imageUrl: "",
+      });
+      setErrorFrorm({});
     }
   }, [open]);
 
   const closeDialog = () => {
     handleClose();
-    setErrorFrorm({});
+    getCatBreeds();
   };
 
   useEffect(() => {
