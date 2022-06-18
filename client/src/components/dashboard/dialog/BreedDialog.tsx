@@ -68,7 +68,6 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
       data: breedFrom,
     },
     onCompleted: (data) => {
-      console.log("add data", data?.addCatBreed?.data);
       if (data?.addCatBreed?.data) {
         closeDialog();
       } else if (data?.addCatBreed?.errors) {
@@ -95,7 +94,6 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
       getCatBreedById({ variables: { id: breedId } });
     }
     if (!open) {
-      console.log("close");
       setBreedForm({
         name: "",
         description: "",

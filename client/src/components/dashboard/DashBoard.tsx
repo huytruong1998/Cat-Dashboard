@@ -29,7 +29,6 @@ const DashBoard = () => {
       fetchPolicy: "network-only",
       nextFetchPolicy: "standby",
       onCompleted: (data) => {
-        console.log("update list", data);
         updateList(data.getCatBreeds.catData);
       },
     }
