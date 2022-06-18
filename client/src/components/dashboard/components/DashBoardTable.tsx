@@ -44,46 +44,53 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data &&
-              data.map((row: BreedElement) => (
-                <TableRow
-                  key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  onClick={() => openEditModal(row.id)}
-                >
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>
-                    <Typography className="truncate-description">
-                      {row.description}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() =>
-                        deleteCatBreeds({ variables: { id: row?.id } })
-                      }
-                    >
-                      <DeleteIcon></DeleteIcon>
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {loading && <Loading size={150} />}
+      <div className="table-wrapper">
+        <TableContainer component={Paper}>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data &&
+                data.map((row: BreedElement) => (
+                  <TableRow
+                    key={row.id}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      "&:hover": {
+                        cursor: "pointer",
+                      },
+                    }}
+                    onClick={() => openEditModal(row.id)}
+                  >
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>
+                      <Typography className="truncate-description">
+                        {row.description}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() =>
+                          deleteCatBreeds({ variables: { id: row?.id } })
+                        }
+                      >
+                        <DeleteIcon></DeleteIcon>
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {loading && <Loading size={150} />}
+      </div>
       <BreedDialog
         open={open}
         handleClose={closeEditModal}

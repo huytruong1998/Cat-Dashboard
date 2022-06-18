@@ -48,16 +48,10 @@ export class AddCatInput {
   description: string;
 
   @Field({ nullable: true })
-  metric_weight?: string;
+  imageUrl?: string;
 
   @Field({ nullable: true })
-  image_url?: string;
-
-  @Field({ nullable: true })
-  life_span?: string;
-
-  @Field({ nullable: true })
-  wikipedia_url?: string;
+  origin?: string;
 }
 
 @Resolver()
@@ -76,6 +70,7 @@ export class CatBreedResolver {
     search?: string
   ): Promise<CatBreedListResponse> {
     let request = `http://localhost:3001/cats?_page=${page}&_sort=${sort}&_order=${order}&_limit=${limit}`;
+
     if (search) request += `&name_like=${search}`;
     return axios.get<CatBreedListResponse>(request).then((res) => {
       const paginationOptions = res.headers["link"]
@@ -125,31 +120,35 @@ export class CatBreedResolver {
   ): Promise<CatBreedResponse> {
     const existingBreed = await axios
       .get<CatBreed[]>(
-        `http://localhost:3001/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}`
+        `http://localhost:3001/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}&id_ne=${id}`
       )
       .then((resp) => resp.data);
-    if (existingBreed.length > 0)
-      return {
-        errors: [
-          {
-            field: "name",
-            message: "The cat breed has already existed!",
-          },
-        ],
-      };
 
+    const fieldErrors: FieldError[] = [];
+    if (existingBreed.length > 0)
+      fieldErrors.push({
+        field: "name",
+        message: "The cat breed has already existed!",
+      });
+
+    if (newCatData.description.length === 0)
+      fieldErrors.push({
+        field: "description",
+        message: "The description can not be empty!",
+      });
+
+    if (fieldErrors.length > 0) {
+      return {
+        errors: fieldErrors,
+      };
+    }
     const data: Partial<CatBreed> = {
-      id,
       name: newCatData.name,
       description: newCatData.description,
-      weight: {
-        metric: newCatData.metric_weight,
-      },
+      origin: newCatData.origin,
       image: {
-        url: newCatData.image_url,
+        url: newCatData.imageUrl,
       },
-      life_span: newCatData.life_span,
-      wikipedia_url: newCatData.wikipedia_url,
     };
 
     return axios
@@ -170,27 +169,32 @@ export class CatBreedResolver {
         `http://localhost:3001/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}`
       )
       .then((resp) => resp.data);
+    const fieldErrors: FieldError[] = [];
     if (existingBreed.length > 0)
+      fieldErrors.push({
+        field: "name",
+        message: "The cat breed has already existed!",
+      });
+
+    if (newCatData.description.length === 0)
+      fieldErrors.push({
+        field: "description",
+        message: "The description can not be empty!",
+      });
+
+    if (fieldErrors.length > 0) {
       return {
-        errors: [
-          {
-            field: "name",
-            message: "The cat breed has already existed!",
-          },
-        ],
+        errors: fieldErrors,
       };
+    }
 
     const data: Partial<CatBreed> = {
       name: newCatData.name,
       description: newCatData.description,
-      weight: {
-        metric: newCatData.metric_weight,
-      },
+      origin: newCatData.origin,
       image: {
-        url: newCatData.image_url,
+        url: newCatData.imageUrl,
       },
-      life_span: newCatData.life_span,
-      wikipedia_url: newCatData.wikipedia_url,
       created_at: new Date().getTime(),
     };
 
