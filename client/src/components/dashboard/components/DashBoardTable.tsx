@@ -77,7 +77,7 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
             <TableHead>
               <TableRow>
                 {headerList.map((h) => (
-                  <TableCell style={{ width: 200 }}>
+                  <TableCell key={h.fields} style={{ width: 200 }}>
                     <TableSortLabel
                       active={variables.sort === h.fields}
                       onClick={() => handleSort(h.fields)}
@@ -96,6 +96,7 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
                   <TableRow key={row.id}>
                     {headerList.map((h) => (
                       <TableCell
+                        key={row.id + `` + h.fields}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                           "&:hover": {
