@@ -48,10 +48,20 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
     },
   });
 
-  const [getCatBreedById, { loading, error, data }] = useLazyQuery(
+  const [getCatBreedById, { loading, error }] = useLazyQuery(
     GET_CAT_BREED_BY_ID,
     {
       fetchPolicy: "network-only",
+      onCompleted: (data) => {
+        if (data) {
+          setBreedForm({
+            name: data.getCatBreedById.name,
+            description: data.getCatBreedById.description,
+            origin: data.getCatBreedById.origin,
+            imageUrl: data.getCatBreedById.image.url,
+          });
+        }
+      },
     }
   );
 
@@ -108,17 +118,6 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
     handleClose();
     getCatBreeds();
   };
-
-  useEffect(() => {
-    if (data) {
-      setBreedForm({
-        name: data.getCatBreedById.name,
-        description: data.getCatBreedById.description,
-        origin: data.getCatBreedById.origin,
-        imageUrl: data.getCatBreedById.image.url,
-      });
-    }
-  }, [data]);
 
   const handleErrorForm = (errors: ErrorFields[]) => {
     let errorData: ErrorMap = {};
