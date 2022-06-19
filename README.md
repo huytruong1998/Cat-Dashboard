@@ -31,7 +31,7 @@ After that, the app is on `http://localhost:3000`
 
 You can check the server graphql client on `http://localhost:8000/graphql`
 
-Note: unit test can be run on `client` folder, `cd client && npm run serve`
+Note: unit test can be run on `client` folder, `cd client && npm run test`
 
 # How to use the application
 
