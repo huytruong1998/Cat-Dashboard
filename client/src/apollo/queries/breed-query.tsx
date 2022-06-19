@@ -5,6 +5,7 @@ export const FRAGMENT_CATBREED = gql`
     id
     name
     description
+    created_at
   }
 `;
 

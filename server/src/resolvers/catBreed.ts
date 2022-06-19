@@ -87,6 +87,12 @@ export class CatBreedResolver {
         catData: res.data as unknown as CatBreed[],
         hasMoreItems: paginationOptions.includes("next"),
       };
+      resp.catData.forEach((breed: CatBreed) => {
+        const breedDate = new Date(parseInt(breed.created_at));
+        breed.created_at = breedDate.toISOString().substring(0, 10);
+        return breed;
+      });
+
       return resp;
     });
   }
@@ -98,7 +104,11 @@ export class CatBreedResolver {
   ): Promise<CatBreed> {
     return axios
       .get<CatBreed>(`http://localhost:3001/cats/${id}`)
-      .then((resp) => resp.data);
+      .then((resp) => {
+        const breedDate = new Date(parseInt(resp.data.created_at));
+        resp.data.created_at = breedDate.toISOString().substring(0, 10);
+        return resp.data;
+      });
   }
 
   @Mutation(() => Boolean)
@@ -107,7 +117,7 @@ export class CatBreedResolver {
       .get<CatBreed[]>("https://api.thecatapi.com/v1/breeds")
       .then((resp) => {
         const today = new Date().getTime();
-        resp.data.forEach((breed) => (breed.created_at = today));
+        resp.data.forEach((breed) => (breed.created_at = today.toString()));
         replace("./db.json", "cats", resp.data);
         return true;
       });
@@ -151,7 +161,7 @@ export class CatBreedResolver {
       },
     };
 
-    return axios
+    return await axios
       .patch<CatBreedResponse>(`http://localhost:3001/cats/${id}`, data)
       .then((resp) => {
         return {
@@ -201,7 +211,7 @@ export class CatBreedResolver {
       image: {
         url: newCatData.imageUrl,
       },
-      created_at: new Date().getTime(),
+      created_at: new Date().getTime().toString(),
     };
 
     return axios

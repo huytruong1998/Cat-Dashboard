@@ -8,6 +8,7 @@ import {
   Paper,
   IconButton,
   Typography,
+  TableSortLabel,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMutation } from "@apollo/client";
@@ -15,13 +16,19 @@ import { Loading } from "components/loading/loading";
 import { DELETE_CAT_BREED } from "apollo/mutations/breed-mutation";
 import "./DashBoardTable.scss";
 import { BreedElement } from "components/dashboard/modals/breeds";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import BreedDialog from "../dialog/BreedDialog";
+import { DashBoardContext } from "context/DashBoardContext";
 
 interface TableProps {
   data: BreedElement[];
   refetch: () => void;
   loading: boolean;
+}
+
+interface headerFields {
+  fields: string;
+  label: string;
 }
 
 const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
@@ -33,6 +40,23 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
       },
     }
   );
+
+  const headerList: headerFields[] = [
+    { fields: "name", label: "Name" },
+    { fields: "description", label: "Description" },
+    { fields: "created_at", label: "Created At" },
+  ];
+
+  const { dashboardState, updateVariables } = useContext(DashBoardContext);
+  const { variables } = dashboardState;
+  const handleSort = (sortBy: string) => {
+    updateVariables({
+      ...variables,
+      sort: sortBy,
+      order: variables.order === "asc" ? "desc" : "asc",
+    });
+    refetch();
+  };
 
   const [open, setOpenBreedDialog] = useState(false);
   const [currentId, setCurrentId] = useState("");
@@ -52,29 +76,40 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell></TableCell>
+                {headerList.map((h) => (
+                  <TableCell style={{ width: 200 }}>
+                    <TableSortLabel
+                      active={variables.sort === h.fields}
+                      onClick={() => handleSort(h.fields)}
+                      direction={variables.order === "asc" ? "asc" : "desc"}
+                    >
+                      {h.label}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+                <TableCell style={{ width: 50 }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data &&
                 data.map((row: BreedElement) => (
                   <TableRow key={row.id}>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                        "&:hover": {
-                          cursor: "pointer",
-                        },
-                      }}
-                      onClick={() => openEditModal(row.id)}
-                    >
-                      <Typography className="truncate-description">
-                        {row.description}
-                      </Typography>
-                    </TableCell>
+                    {headerList.map((h) => (
+                      <TableCell
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                          "&:hover": {
+                            cursor: "pointer",
+                          },
+                        }}
+                        onClick={() => openEditModal(row.id)}
+                      >
+                        <Typography className="truncate-description">
+                          {row[h.fields as keyof BreedElement]}
+                        </Typography>
+                      </TableCell>
+                    ))}
+
                     <TableCell>
                       <IconButton
                         size="small"
