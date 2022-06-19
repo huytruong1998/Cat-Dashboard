@@ -9,6 +9,7 @@ import {
   IconButton,
   Typography,
   TableSortLabel,
+  Tooltip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMutation } from "@apollo/client";
@@ -111,15 +112,17 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
                     ))}
 
                     <TableCell>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() =>
-                          deleteCatBreeds({ variables: { id: row?.id } })
-                        }
-                      >
-                        <DeleteIcon></DeleteIcon>
-                      </IconButton>
+                      <Tooltip title="Click to delete">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() =>
+                            deleteCatBreeds({ variables: { id: row?.id } })
+                          }
+                        >
+                          <DeleteIcon></DeleteIcon>
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}

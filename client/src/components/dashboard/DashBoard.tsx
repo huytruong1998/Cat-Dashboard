@@ -97,18 +97,21 @@ const DashBoard = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <Button variant="contained" type="submit">
-              <SearchIcon></SearchIcon>
-            </Button>
+            <Tooltip title="Click to search">
+              <Button variant="contained" type="submit">
+                <SearchIcon></SearchIcon>
+              </Button>
+            </Tooltip>
           </form>
-
-          <Button
-            className="table-utils__control__add"
-            variant="contained"
-            onClick={() => setOpenBreedDialog(true)}
-          >
-            Add New
-          </Button>
+          <Tooltip title="Add new Cat Breed">
+            <Button
+              className="table-utils__control__add"
+              variant="contained"
+              onClick={() => setOpenBreedDialog(true)}
+            >
+              Add New
+            </Button>
+          </Tooltip>
         </div>
         <div className="table-utils__pagination">
           <Tooltip title="Refetch data from cat API">
