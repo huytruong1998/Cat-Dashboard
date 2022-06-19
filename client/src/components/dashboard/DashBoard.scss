@@ -3,6 +3,18 @@
 .table-utils{
     overflow:auto;
     margin: 10px 0px;
+    @include desktop{
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    @include tablet{
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+    }
+    
     &__control{
         display: flex;
         @include tablet {
@@ -31,11 +43,9 @@
         }
     }
     &__pagination{
+        height: 100%;
         gap: 10px;
         display: flex;
-        @include tablet {
-            float: right;
-        }
         @include mobile {
             justify-content: center;
         }
