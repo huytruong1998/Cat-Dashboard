@@ -147,10 +147,17 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
     <Modal open={open} onClose={closeDialog}>
       <Box className="container">
         <form>
-          <h1>{breedId ? "Cat Breed Info" : "Add New Cat Breed"}</h1>
+          <h1>{breedId ? "Cat Breed Edit" : "Add New Cat Breed"}</h1>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <img style={{ width: "100%" }} src={defaultLogo} alt="" />
+              <img
+                style={{ width: "100%" }}
+                src={breedFrom.imageUrl}
+                alt=""
+                onError={(e) => {
+                  e.currentTarget.src = defaultLogo;
+                }}
+              />
             </Grid>
             <Grid style={{ gridRowGap: 10 }} container item xs={12} md={6}>
               <TextField

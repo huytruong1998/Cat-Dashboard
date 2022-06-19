@@ -32,6 +32,8 @@ interface headerFields {
 }
 
 const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
+  const { dashboardState, updateVariables } = useContext(DashBoardContext);
+  const { variables } = dashboardState;
   const [deleteCatBreeds, { loading: deleteLoading }] = useMutation(
     DELETE_CAT_BREED,
     {
@@ -47,8 +49,6 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
     { fields: "created_at", label: "Created At" },
   ];
 
-  const { dashboardState, updateVariables } = useContext(DashBoardContext);
-  const { variables } = dashboardState;
   const handleSort = (sortBy: string) => {
     updateVariables({
       ...variables,

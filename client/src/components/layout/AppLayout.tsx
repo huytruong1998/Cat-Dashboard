@@ -6,7 +6,7 @@ interface LayoutProps {
 
 const AppLayout = ({ children }: LayoutProps) => {
   return (
-    <Container>
+    <Container style={{ marginTop: 50, marginBottom: 50 }}>
       <h1>The Cat Breed Catalog</h1>
       <div>{children}</div>
     </Container>

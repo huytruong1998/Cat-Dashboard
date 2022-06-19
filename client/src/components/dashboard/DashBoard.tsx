@@ -47,15 +47,12 @@ const DashBoard = () => {
   }, []);
 
   useEffect(() => {
-    const newData = {
+    if (!dataFetch) return;
+
+    updateVariables({
       ...variables,
       page: 1,
-    };
-    if (variables.page === 1) {
-      getCatBreeds({ variables: newData });
-    } else {
-      updateVariables(newData);
-    }
+    });
   }, [dataFetch]);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
@@ -68,7 +65,7 @@ const DashBoard = () => {
   };
 
   const handlePrevPage = () => {
-    if (variables.page < 2) return;
+    if (variables.page < 2 || loading) return;
     updateVariables({
       ...variables,
       page: variables.page - 1,
@@ -76,7 +73,7 @@ const DashBoard = () => {
   };
 
   const handleNextPage = () => {
-    if (!data?.getCatBreeds?.hasMoreItems) return;
+    if (!data?.getCatBreeds?.hasMoreItems || loading) return;
     updateVariables({
       ...variables,
       page: variables.page + 1,
