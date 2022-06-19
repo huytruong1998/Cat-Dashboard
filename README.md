@@ -8,40 +8,40 @@ This app require to open 2 terminal to run a server and a client:
 
 **For the server:**
 
-you need to access the `server` folder:
+Need to access the `server` folder:
 
 `cd server`
 
-Then you just need to install dependencies and run the app:
+Then need to install dependencies and run the command to execute app:
 
 `npm i && npm run dev`
 
 **For the client:**
 
-you need to access the `client` folder:
+Need to access the `client` folder:
 
 `cd client`
 
-Then you just need to install dependencies and run the app:
+Then need to install dependencies and run the command to execute app:
 
 `npm i && npm run serve`
 
 \
 After that, the app is on `http://localhost:3000`
 
-You can check the server graphql client on `http://localhost:8000/graphql`
+the graphql client server can be view on `http://localhost:8000/graphql`
 
-Note: unit test can be run on `client` folder, `cd client && npm run test`
+**Note:** unit test can be run on `client` folder, `cd client && npm run test`
 
 # How to use the application
 
-- You can refetch data from the Cat API by clicking this button.
+- the Cat API `https://api.thecatapi.com/v1/breeds` data can be refetch by clicking this button.
 
 ![alt text](./images/fetchCat.png)
 
 - When click the table column name, the table data will be sorted according to the column
 
-- Note: sorting will be base by [ASCII Table] (https://www.asciitable.com/). Sort order: 0-9 -> A-B -> a-b
+- **Note:** sorting will be base by [ASCII Table] (https://www.asciitable.com/). Sort order: `0-9` -> `A-B` -> `a-b`
 
 ![alt text](./images/sortCat.png)
 
