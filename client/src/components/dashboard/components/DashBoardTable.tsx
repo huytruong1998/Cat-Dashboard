@@ -35,6 +35,14 @@ interface headerFields {
 const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
   const { dashboardState, updateVariables } = useContext(DashBoardContext);
   const { variables } = dashboardState;
+  const [open, setOpenBreedDialog] = useState(false);
+  const [currentId, setCurrentId] = useState("");
+
+  const headerList: headerFields[] = [
+    { fields: "name", label: "Name" },
+    { fields: "description", label: "Description" },
+    { fields: "created_at", label: "Created At" },
+  ];
   const [deleteCatBreeds, { loading: deleteLoading }] = useMutation(
     DELETE_CAT_BREED,
     {
@@ -44,12 +52,6 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
     }
   );
 
-  const headerList: headerFields[] = [
-    { fields: "name", label: "Name" },
-    { fields: "description", label: "Description" },
-    { fields: "created_at", label: "Created At" },
-  ];
-
   const handleSort = (sortBy: string) => {
     updateVariables({
       ...variables,
@@ -58,9 +60,6 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
     });
     refetch();
   };
-
-  const [open, setOpenBreedDialog] = useState(false);
-  const [currentId, setCurrentId] = useState("");
 
   const openEditModal = (id: string) => {
     setCurrentId(id);

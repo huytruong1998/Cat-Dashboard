@@ -14,6 +14,8 @@ import {
 // @ts-ignore
 import { replace } from "replace-json-property";
 
+const DB_ENDPOINT = "http://localhost:3001";
+
 @ObjectType()
 class FieldError {
   @Field()
@@ -69,7 +71,7 @@ export class CatBreedResolver {
     @Arg("search", () => String, { nullable: true })
     search?: string
   ): Promise<CatBreedListResponse> {
-    let request = `http://localhost:3001/cats?_page=${page}&_sort=${sort}&_order=${order}&_limit=${limit}`;
+    let request = `${DB_ENDPOINT}/cats?_page=${page}&_sort=${sort}&_order=${order}&_limit=${limit}`;
 
     if (search) request += `&name_like=${search}`;
     return axios.get<CatBreedListResponse>(request).then((res) => {
@@ -102,13 +104,11 @@ export class CatBreedResolver {
     @Arg("id", () => String)
     id: string
   ): Promise<CatBreed> {
-    return axios
-      .get<CatBreed>(`http://localhost:3001/cats/${id}`)
-      .then((resp) => {
-        const breedDate = new Date(parseInt(resp.data.created_at));
-        resp.data.created_at = breedDate.toISOString().substring(0, 10);
-        return resp.data;
-      });
+    return axios.get<CatBreed>(`${DB_ENDPOINT}/cats/${id}`).then((resp) => {
+      const breedDate = new Date(parseInt(resp.data.created_at));
+      resp.data.created_at = breedDate.toISOString().substring(0, 10);
+      return resp.data;
+    });
   }
 
   @Mutation(() => Boolean)
@@ -130,7 +130,7 @@ export class CatBreedResolver {
   ): Promise<CatBreedResponse> {
     const existingBreed = await axios
       .get<CatBreed[]>(
-        `http://localhost:3001/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}&id_ne=${id}`
+        `${DB_ENDPOINT}/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}&id_ne=${id}`
       )
       .then((resp) => resp.data);
 
@@ -162,7 +162,7 @@ export class CatBreedResolver {
     };
 
     return await axios
-      .patch<CatBreedResponse>(`http://localhost:3001/cats/${id}`, data)
+      .patch<CatBreedResponse>(`${DB_ENDPOINT}/cats/${id}`, data)
       .then((resp) => {
         return {
           data: resp.data as CatBreed,
@@ -176,7 +176,7 @@ export class CatBreedResolver {
   ): Promise<CatBreedResponse> {
     const existingBreed = await axios
       .get<CatBreed[]>(
-        `http://localhost:3001/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}`
+        `${DB_ENDPOINT}/cats?name_like=${newCatData.name}&name.length=${newCatData.name.length}`
       )
       .then((resp) => resp.data);
     const fieldErrors: FieldError[] = [];
@@ -215,7 +215,7 @@ export class CatBreedResolver {
     };
 
     return axios
-      .post<CatBreedResponse>(`http://localhost:3001/cats`, data)
+      .post<CatBreedResponse>(`${DB_ENDPOINT}/cats`, data)
       .then((resp) => {
         return {
           data: resp.data as CatBreed,
@@ -228,7 +228,7 @@ export class CatBreedResolver {
     @Arg("id", () => String)
     id: string
   ): Promise<Boolean> {
-    await axios.delete(`http://localhost:3001/cats/${id}`);
+    await axios.delete(`${DB_ENDPOINT}/cats/${id}`);
     return true;
   }
 }

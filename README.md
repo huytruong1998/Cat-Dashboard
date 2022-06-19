@@ -35,7 +35,7 @@ the graphql client server can be view on `http://localhost:8000/graphql`
 
 # How to use the application
 
-- the Cat API `https://api.thecatapi.com/v1/breeds` data can be refetch by clicking this button.
+- the Cat API `https://api.thecatapi.com/v1/breeds` will be populated by clicking this button.
 
 ![alt text](./images/fetchCat.png)
 

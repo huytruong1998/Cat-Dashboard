@@ -39,6 +39,14 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
   breedId,
 }) => {
   const { dashboardState, updateList } = useContext(DashBoardContext);
+  const [errorForm, setErrorFrorm] = useState<ErrorMap>({});
+  const [breedFrom, setBreedForm] = useState<BreedFormData>({
+    name: "",
+    description: "",
+    origin: "",
+    imageUrl: "",
+  });
+
   const [getCatBreeds] = useLazyQuery(GET_CAT_BREEDS, {
     variables: dashboardState.variables,
     fetchPolicy: "network-only",
@@ -64,14 +72,6 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
       },
     }
   );
-
-  const [errorForm, setErrorFrorm] = useState<ErrorMap>({});
-  const [breedFrom, setBreedForm] = useState<BreedFormData>({
-    name: "",
-    description: "",
-    origin: "",
-    imageUrl: "",
-  });
 
   const [addCatBreed] = useMutation(ADD_CAT_BREED, {
     variables: {
