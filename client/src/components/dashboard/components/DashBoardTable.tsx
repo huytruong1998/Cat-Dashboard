@@ -19,11 +19,11 @@ import "./DashBoardTable.scss";
 import { BreedElement } from "components/dashboard/modals/breeds";
 import { useContext, useState } from "react";
 import BreedDialog from "../dialog/BreedDialog";
-import { DashBoardContext } from "context/DashBoardContext";
+import { DashBoardContext, getCatVariable } from "context/DashBoardContext";
 
 interface TableProps {
   data: BreedElement[];
-  refetch: () => void;
+  refetch: (variables: { variables: getCatVariable }) => void;
   loading: boolean;
 }
 
@@ -47,7 +47,7 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
     DELETE_CAT_BREED,
     {
       onCompleted: () => {
-        refetch();
+        refetch({ variables });
       },
     }
   );
@@ -58,7 +58,7 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
       sort: sortBy,
       order: variables.order === "asc" ? "desc" : "asc",
     });
-    refetch();
+    refetch({ variables });
   };
 
   const openEditModal = (id: string) => {

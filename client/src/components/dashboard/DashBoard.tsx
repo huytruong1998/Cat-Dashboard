@@ -25,9 +25,7 @@ const DashBoard = () => {
   const [getCatBreeds, { loading, error, data }] = useLazyQuery(
     GET_CAT_BREEDS,
     {
-      variables: variables,
       fetchPolicy: "network-only",
-      nextFetchPolicy: "standby",
       onCompleted: (data) => {
         updateList(data.getCatBreeds.catData);
       },
@@ -43,7 +41,7 @@ const DashBoard = () => {
   }, [variables, displayList]);
 
   useEffect(() => {
-    getCatBreeds();
+    getCatBreeds({ variables });
   }, []);
 
   useEffect(() => {
@@ -58,27 +56,33 @@ const DashBoard = () => {
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    updateVariables({
+    const newData: getCatVariable = {
       ...variables,
       page: 1,
       search,
-    });
+    };
+    updateVariables(newData);
+    getCatBreeds({ variables: newData });
   };
 
   const handlePrevPage = () => {
-    if (variables.page < 2 || loading) return;
-    updateVariables({
+    if (variables.page < 2) return;
+    const newData: getCatVariable = {
       ...variables,
       page: variables.page - 1,
-    });
+    };
+    updateVariables(newData);
+    getCatBreeds({ variables: newData });
   };
 
   const handleNextPage = () => {
-    if (!data?.getCatBreeds?.hasMoreItems || loading) return;
-    updateVariables({
+    if (!data?.getCatBreeds?.hasMoreItems) return;
+    const newData: getCatVariable = {
       ...variables,
       page: variables.page + 1,
-    });
+    };
+    updateVariables(newData);
+    getCatBreeds({ variables: newData });
   };
 
   if (error) return <div>{error.message}</div>;
@@ -121,10 +125,10 @@ const DashBoard = () => {
             </Button>
           </Tooltip>
           <div>{getPageNumber}</div>
-          <IconButton size="small" onClick={handlePrevPage}>
+          <IconButton size="small" disabled={loading} onClick={handlePrevPage}>
             <ArrowBackIosNewOutlinedIcon></ArrowBackIosNewOutlinedIcon>
           </IconButton>
-          <IconButton size="small" onClick={handleNextPage}>
+          <IconButton size="small" disabled={loading} onClick={handleNextPage}>
             <ArrowForwardIosOutlinedIcon></ArrowForwardIosOutlinedIcon>
           </IconButton>
         </div>

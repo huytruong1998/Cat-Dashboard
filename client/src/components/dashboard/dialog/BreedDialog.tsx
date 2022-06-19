@@ -50,7 +50,6 @@ const BreedDialog: React.FC<BreedDialogProps> = ({
   const [getCatBreeds] = useLazyQuery(GET_CAT_BREEDS, {
     variables: dashboardState.variables,
     fetchPolicy: "network-only",
-    nextFetchPolicy: "standby",
     onCompleted: (data) => {
       updateList(data.getCatBreeds.catData);
     },
