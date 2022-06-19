@@ -11,7 +11,7 @@ import { GET_CAT_BREEDS } from "apollo/queries/breed-query";
 import { FormEvent, useContext, useEffect, useMemo, useState } from "react";
 import { FETCH_CAT_BREEDS } from "apollo/mutations/breed-mutation";
 import BreedDialog from "./dialog/BreedDialog";
-import { DashBoardContext } from "context/DashBoardContext";
+import { DashBoardContext, getCatVariable } from "context/DashBoardContext";
 
 const DashBoard = () => {
   const [search, setSearch] = useState<string>("");
@@ -48,11 +48,12 @@ const DashBoard = () => {
 
   useEffect(() => {
     if (!dataFetch) return;
-
-    updateVariables({
+    const newData: getCatVariable = {
       ...variables,
       page: 1,
-    });
+    };
+    getCatBreeds({ variables: newData });
+    updateVariables(newData);
   }, [dataFetch]);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
