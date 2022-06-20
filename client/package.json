@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll",
     "serve": "webpack serve"
   },
   "eslintConfig": {
