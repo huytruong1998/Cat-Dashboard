@@ -11,7 +11,7 @@ import { GET_CAT_BREEDS } from "apollo/queries/breed-query";
 import { FormEvent, useContext, useEffect, useMemo, useState } from "react";
 import { FETCH_CAT_BREEDS } from "apollo/mutations/breed-mutation";
 import BreedDialog from "./dialog/BreedDialog";
-import { DashBoardContext, getCatVariable } from "context/DashBoardContext";
+import { DashBoardContext } from "context/DashBoardContext";
 
 const DashBoard = () => {
   const [search, setSearch] = useState<string>("");
@@ -45,44 +45,40 @@ const DashBoard = () => {
   }, []);
 
   useEffect(() => {
+    getCatBreeds({ variables });
+  }, [variables]);
+
+  useEffect(() => {
     if (!dataFetch) return;
-    const newData: getCatVariable = {
+    updateVariables({
       ...variables,
       page: 1,
-    };
-    getCatBreeds({ variables: newData });
-    updateVariables(newData);
+    });
   }, [dataFetch]);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newData: getCatVariable = {
+    updateVariables({
       ...variables,
       page: 1,
       search,
-    };
-    updateVariables(newData);
-    getCatBreeds({ variables: newData });
+    });
   };
 
   const handlePrevPage = () => {
     if (variables.page < 2) return;
-    const newData: getCatVariable = {
+    updateVariables({
       ...variables,
       page: variables.page - 1,
-    };
-    updateVariables(newData);
-    getCatBreeds({ variables: newData });
+    });
   };
 
   const handleNextPage = () => {
     if (!data?.getCatBreeds?.hasMoreItems) return;
-    const newData: getCatVariable = {
+    updateVariables({
       ...variables,
       page: variables.page + 1,
-    };
-    updateVariables(newData);
-    getCatBreeds({ variables: newData });
+    });
   };
 
   if (error) return <div>{error.message}</div>;
