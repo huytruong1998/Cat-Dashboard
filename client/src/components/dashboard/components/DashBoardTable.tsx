@@ -53,12 +53,13 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
   );
 
   const handleSort = (sortBy: string) => {
-    updateVariables({
+    const newData: getCatVariable = {
       ...variables,
       sort: sortBy,
       order: variables.order === "asc" ? "desc" : "asc",
-    });
-    refetch({ variables });
+    };
+    updateVariables(newData);
+    refetch({ variables: newData });
   };
 
   const openEditModal = (id: string) => {
