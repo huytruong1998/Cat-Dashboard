@@ -17,7 +17,7 @@ import { Loading } from "components/loading/loading";
 import { DELETE_CAT_BREED } from "apollo/mutations/breed-mutation";
 import "./DashBoardTable.scss";
 import { BreedElement } from "components/dashboard/modals/breeds";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import BreedDialog from "../dialog/BreedDialog";
 import { DashBoardContext, getCatVariable } from "context/DashBoardContext";
 
@@ -51,10 +51,6 @@ const DashBoardTable: React.FC<TableProps> = ({ data, refetch, loading }) => {
       },
     }
   );
-
-  useEffect(() => {
-    refetch({ variables });
-  }, [variables]);
 
   const handleSort = (sortBy: string) => {
     updateVariables({
