@@ -11,7 +11,6 @@ module.exports = {
     port: 3000,
     open: true,
     hot: true,
-    historyApiFallback: true,
   },
   resolve: {
     extensions: [".ts", ".js", ".tsx", ".json"],
@@ -23,7 +22,7 @@ module.exports = {
       { test: /\.scss$/, use: ["style-loader", "css-loader", "sass-loader"] },
       {
         test: /\.ts(x?)$/,
-        exclude: ["/node_modules/", "/src/scss/"],
+        exclude: ["/node_modules/"],
         use: ["babel-loader", "ts-loader"],
       },
       { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
